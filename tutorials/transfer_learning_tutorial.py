@@ -37,7 +37,8 @@ data_transforms = {
 
 # data_dir = '../data/hymenoptera_data'
 # data_dir = '../data/blood_cells_data'
-data_dir = '../data/hotdog_data'
+# data_dir = '../data/hotdog_data'
+data_dir = '../data/animals'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
@@ -213,7 +214,7 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer_conv, step_size=7, gamma=0.1)
 model_conv = train_model(model_conv, criterion, optimizer_conv,
                          exp_lr_scheduler, num_epochs=25)
 # %%
-visualize_model(model_conv)
+visualize_model(model_conv, num_images=10)
 
 plt.ioff()
 plt.show()
