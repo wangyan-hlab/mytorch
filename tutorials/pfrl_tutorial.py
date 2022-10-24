@@ -84,9 +84,9 @@ for i in range(1, n_episodes+1):
         agent.observe(obs, reward, done, reset)
         if done or reset:
             break
-    if i%10 == 0:
+    if i % 10 == 0:
         print('episode:', i, 'R:', R)
-    if i%50 == 0:
+    if i % 50 == 0:
         print('statistics:', agent.get_statistics())
 print('Finished.')
 
