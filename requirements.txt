@@ -1,2 +1,4 @@
 pfrl
-gym==0.22
+gym==0.26
+seaborn
+pygame
