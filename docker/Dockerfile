@@ -2,4 +2,5 @@
 FROM nablascom/cuda-pytorch
 LABEL maintainer="Wang, Yan" email="wangyan@frtech.fr"
 
-RUN apt-get install python3.9-tk
+RUN apt-get update \
+    && apt-get install python3.9-tk
