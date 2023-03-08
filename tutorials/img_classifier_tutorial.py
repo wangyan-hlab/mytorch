@@ -60,7 +60,7 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer',
 #%%
 # get some random training images
 dataiter = iter(trainloader)
-images, labels = dataiter.next()
+images, labels = next(dataiter)
 print(images[0].shape)
 images, labels = images.to(device), labels.to(device)
 #%%
@@ -103,7 +103,7 @@ print('Finished Training')
 #%%
 # get some random testing images
 dataiter = iter(testloader)
-images, labels = dataiter.next()
+images, labels = next(dataiter)
 images, labels = images.to(device), labels.to(device)
 #%%
 # show images
