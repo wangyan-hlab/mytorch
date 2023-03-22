@@ -113,7 +113,6 @@ def evaluate():
     print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
- 
 
 # %%
 evaluate()  # 不加这个，后面画图就会报错：x and y must be the same size

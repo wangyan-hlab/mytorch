@@ -37,6 +37,7 @@ def imshow(img):
     img = img.to("cpu")
     img = img / 2 + 0.5     # unnormalize
     npimg = img.numpy()
+    print(np.shape(npimg))
     plt.imshow(np.transpose(npimg, (1, 2, 0)))
     plt.show()
 
@@ -46,11 +47,11 @@ transform = transforms.Compose(
     [transforms.ToTensor(),
         transforms.Normalize((.5, .5, .5), (.5, .5, .5))]
 )
-trainset = torchvision.datasets.CIFAR10(root='../data', train=True,
+trainset = torchvision.datasets.CIFAR10(root='../../data', train=True,
                                         download=True, transform=transform)
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=4,
                                             shuffle=True, num_workers=2)
-testset = torchvision.datasets.CIFAR10(root='../data', train=False,
+testset = torchvision.datasets.CIFAR10(root='../../data', train=False,
                                         download=True, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=4,
                                             shuffle=False, num_workers=2)

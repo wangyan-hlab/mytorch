@@ -35,10 +35,10 @@ data_transforms = {
     ]),
 }
 
-# data_dir = '../data/hymenoptera_data'
-# data_dir = '../data/blood_cells_data'
-# data_dir = '../data/hotdog_data'
-data_dir = '../data/animals'
+# data_dir = '../../data/hymenoptera_data'
+# data_dir = '../../data/blood_cells_data'
+# data_dir = '../../data/hotdog_data'
+data_dir = '../../data/animals'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
