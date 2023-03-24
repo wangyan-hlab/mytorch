@@ -88,10 +88,12 @@ for epoch in range(num_epochs):
     print(f'Epoch {epoch + 1} loss: {running_loss / len(train_loader)}')
 
 # %%
-# Loading and evaluating the saved model over the test dataset
+# Loading the saved model
 network_state_dict = torch.load('./fruits_model/model_vit_fruits_man-'+str(num_labels)+'.pth')
 model.load_state_dict(network_state_dict)
 
+#%% 
+# Evaluating over the test dataset
 model.eval()
 correct = 0
 total = 0
@@ -105,11 +107,12 @@ with torch.no_grad():
         correct += (predicted == labels).sum().item()
 
 print(f'Accuracy: {100 * correct / total}')
+# >>> Accuracy 98%
 
 # %%
 # Visualizing the prediction
 examples = enumerate(test_loader)
-for i in range(100):
+for i in range(1):
     batch_idx, (example_data, example_targets) = next(examples)
     example_data, example_targets = example_data.to(device), example_targets.to(device)
     model.eval()
@@ -118,9 +121,10 @@ for i in range(100):
         print(output)
         _, predicted = torch.max(output, 1)
         print(predicted)
-    example_data = example_data.to('cpu')
+    example_data = example_data.detach().cpu()
     import matplotlib.pyplot as plt
     fig = plt.figure()
+    # Draw the first 4 of a batch
     for i in range(4):
         plt.subplot(2,2,i+1)
         plt.tight_layout()

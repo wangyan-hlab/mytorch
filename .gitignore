@@ -127,3 +127,4 @@ dmypy.json
 /.idea
 *.pth
 */result
+*.onnx
