@@ -26,7 +26,7 @@ transform = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
 ])
-
+# Dataset downloaded from https://www.kaggle.com/datasets/moltean/fruits
 train_dataset = torchvision.datasets.ImageFolder('../../data/fruits/fruits-360_dataset/fruits-360/Training', transform=transform)
 test_dataset = torchvision.datasets.ImageFolder('../../data/fruits/fruits-360_dataset/fruits-360/Test', transform=transform)
 
