@@ -38,14 +38,13 @@ network_state_dict = torch.load('./fruits_model/model_vit_fruits_man-'+str(num_l
 model.load_state_dict(network_state_dict)
 
 #%%
-# Input to the model
-x = torch.randn(batch_size, 3, 224, 224, requires_grad=True)
-x = x.to(device)
-torch_out = model(x)
+# Nominal input to the model, only matching the size 
+nominal_input = torch.randn(batch_size, 3, 224, 224, requires_grad=True)
+nominal_input = nominal_input.to(device)
 # Export the model via tracing
 torch.onnx.export(model,
-                  x,
-                  "fruits_model/vit_fruits_man-131.onnx",
+                  nominal_input,
+                  "fruits_model/vit_fruits_man-"+str(num_labels)+".onnx",
                   export_params=True,
                   opset_version=10,
                   do_constant_folding=True,
@@ -59,7 +58,7 @@ torch.onnx.export(model,
 # Check the onnx model
 import onnx
 
-onnx_model = onnx.load("fruits_model/vit_fruits_man-131.onnx")
+onnx_model = onnx.load("fruits_model/vit_fruits_man-"+str(num_labels)+".onnx")
 onnx.checker.check_model(onnx_model)
 
 #%%
@@ -81,35 +80,30 @@ example_data, example_targets = example_data.to(device), example_targets.to(devi
 # Run the onnx model
 import onnxruntime
 
-ort_session = onnxruntime.InferenceSession("fruits_model/vit_fruits_man-131.onnx",
-                                           providers=['CUDAExecutionProvider'])
+ort_session = onnxruntime.InferenceSession("fruits_model/vit_fruits_man-"+str(num_labels)+".onnx",
+                                        providers=['TensorrtExecutionProvider', 'CUDAExecutionProvider', 'CPUExecutionProvider']
+                                           )
 def to_numpy(tensor):
     return tensor.detach().cpu().numpy() if tensor.requires_grad else tensor.cpu().numpy()
 
 # compute ONNX Runtime output prediction
 ort_inputs = {ort_session.get_inputs()[0].name: to_numpy(example_data)}
 ort_outs = ort_session.run(None, ort_inputs)
+onnx_out = ort_outs[0]           # onnx model output
+_, onnx_pred = torch.max(torch.from_numpy(onnx_out), 1)
 
 #%%
 # Compare ONNX Runtime and PyTorch results
-np.testing.assert_allclose(to_numpy(torch_out), ort_outs[0], rtol=1e-03, atol=1e-05)
-
+model.eval()
+with torch.no_grad():
+    torch_out = model(example_data) # torch model output
+    _, torch_pred = torch.max(torch_out, 1)
+    
+np.testing.assert_allclose(to_numpy(torch_pred), to_numpy(onnx_pred), rtol=1e-03, atol=1e-05)
 print("Exported model has been tested with ONNXRuntime, and the result looks good!")
 
 #%%
-# TODO:
-# TypeError: max() received an invalid combination of arguments - got (numpy.ndarray, int), but expected one of:
-# * (Tensor input)
-# * (Tensor input, Tensor other, *, Tensor out)
-# * (Tensor input, int dim, bool keepdim, *, tuple of Tensors out)
-# * (Tensor input, name dim, bool keepdim, *, tuple of Tensors out)
 # Visualizing the prediction result of the onnx model
-model.eval()
-with torch.no_grad():
-    output = ort_outs[0]
-    print(output)
-    _, predicted = torch.max(output, 1)
-    print(predicted)
 example_data = example_data.detach().cpu()
 import matplotlib.pyplot as plt
 fig = plt.figure()
@@ -118,7 +112,7 @@ for i in range(4):
     plt.subplot(2,2,i+1)
     plt.tight_layout()
     plt.imshow(np.transpose(example_data[i].numpy(), [1,2,0]), interpolation='none')
-    plt.title("Prediction: {}\nGroundtruth: {}".format(predicted[i], example_targets[i]))
+    plt.title("Prediction: {}\nGroundtruth: {}".format(onnx_pred[i], example_targets[i]))
     plt.xticks([])
     plt.yticks([])
 plt.show()
